@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="https://img.icons8.com/?size=100&id=20884&format=png&color=000000">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/?size=100&id=20884&format=png&color=000000">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#eef0f7">
+
+    <title>Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1a2b5c;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e4ee;
+            --field-bg: #f3f4f9;
+            --text: #1a2b5c;
+            --muted: #32445D;
+            --red-soft: #fff0ee;
+            --red: #d95f4b;
+        }
+
+        * {
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 1.25rem 1rem;
+        }
+
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .icon-btn {
+            width: 2.25rem;
+            height: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text);
+            border-radius: 50%;
+            transition: background 0.15s;
+        }
+
+        .icon-btn:hover {
+            background: var(--border);
+        }
+
+        /* ── Amount hero ── */
+        .amount-hero {
+            text-align: center;
+            padding: 0.5rem 1.5rem 1.5rem;
+        }
+
+        .amount-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--navy);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .amount-input {
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            border: none;
+            background: transparent;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            caret-color: var(--muted);
+            font-family: 'Poppins', sans-serif;
+            display: block;
+        }
+
+        .amount-input.has-value {
+            color: var(--text);
+        }
+
+        .amount-underline {
+            height: 2px;
+            background: var(--navy);
+            border-radius: 2px;
+            margin: 0.2rem auto 0;
+            width: 60%;
+            transition: background 0.2s;
+        }
+
+        .amount-input:focus~.amount-underline {
+            background: var(--navy);
+        }
+
+        /* ── Form card ── */
+        .form-card {
+            background: var(--card);
+            border-radius: 1.25rem;
+            margin: 0 1rem;
+            padding: 0.5rem 1.25rem 1.5rem;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ── Field block (label + outlined box) ── */
+        .field-block {
+            margin-top: 1.1rem;
+        }
+
+        .field-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        /* Outlined input box — matches screenshot */
+        .field-box {
+            width: 100%;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 0.875rem;
+            padding: 0.85rem 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            outline: none;
+            display: block;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .field-box:focus {
+            border-color: var(--navy);
+        }
+
+        .field-box::placeholder {
+            color: #b8bccf;
+        }
+
+        /* Date — show calendar picker icon */
+        input[type="date"].field-box {
+            min-height: 48px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        /* Select chevron */
+        select.field-box {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7f96' stroke-width='2.5' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        /* Textarea */
+        textarea.field-box {
+            resize: none;
+            min-height: 90px;
+            line-height: 1.5;
+        }
+
+        /* ── Submit button ── */
+        .btn-submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            /* background: var(--navy); */
+            background: linear-gradient(135deg, #163A6B 0%, #070808 100%);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            padding: 1.05rem;
+            width: calc(100% - 2rem);
+            margin: 1.25rem 1rem 1.75rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.88;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ── Floating action buttons (stacked) ── */
+        .fab-stack {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.9rem;
+            z-index: 50;
+        }
+
+        .fab-btn {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: linear-gradient(135deg, #163A6B 0%, #070808 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            text-decoration: none;
+        }
+
+        .fab-btn:hover {
+            opacity: 0.88;
+            transform: scale(1.05);
+        }
+
+        .fab-btn i {
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+
+        /* ── Category view ── */
+        .cat-topbar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.5rem 1.25rem 1rem;
+        }
+
+        .cat-topbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .cat-add-row {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem 1rem;
+        }
+
+        .cat-input {
+            flex: 1;
+            border: 1.5px solid var(--border);
+            border-radius: 0.875rem;
+            padding: 0.75rem 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            /* background: var(--field-bg); */
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .cat-input:focus {
+            border-color: var(--navy);
+        }
+
+        .cat-input::placeholder {
+            color: #b8bccf;
+        }
+
+        .cat-add-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            background: var(--navy);
+            border: none;
+            border-radius: 0.875rem;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        .cat-add-btn:hover {
+            opacity: 0.88;
+        }
+
+        .cat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .cat-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cat-item-name {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .cat-delete-btn {
+            width: 2rem;
+            height: 2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: background 0.15s;
+        }
+
+        .cat-delete-btn:hover {
+            background: var(--red-soft);
+        }
+
+        /* ── History view ── */
+        /* .total-card {
+            background: white;
+            border-radius: 1.25rem;
+            margin: 0 1rem 1rem;
+            padding: 1.1rem 1.25rem;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        } */
+
+        .total-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .total-amount {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0 1rem 1rem;
+        }
+
+        .search-input-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input-wrap i {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa0b4;
+            font-size: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1.5px solid var(--border);
+            border-radius: 0.875rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--navy);
+        }
+
+        .search-input::placeholder {
+            color: #b8bccf;
+        }
+
+        .filter-icon-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            border: 1.5px solid var(--border);
+            border-radius: 0.875rem;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .filter-icon-btn:hover {
+            background: var(--field-bg);
+        }
+
+        .filter-icon-btn.active {
+            background: var(--navy);
+            color: white;
+            border-color: var(--navy);
+        }
+
+        .tx-section {
+            padding: 0 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .tx-section-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin: 0 0 0.6rem 0.1rem;
+        }
+
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .tx-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.9rem 1.05rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .tx-item:active {
+            transform: scale(0.98);
+        }
+
+        .tx-cat {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--navy);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
+        .tx-desc {
+            font-size: 0.92rem;
+            color: var(--text);
+            display: block;
+        }
+
+        .tx-meta {
+            font-size: 0.68rem;
+            color: #9aa0b4;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .tx-amount {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--red);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tx-empty {
+            text-align: center;
+            color: #9aa0b4;
+            padding: 2.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .tx-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Filter bottom sheet ── */
+        .sheet-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 110;
+        }
+
+        .sheet-box {
+            background: white;
+            width: 100%;
+            max-width: 430px;
+            border-radius: 1.5rem 1.5rem 0 0;
+            padding: 0.5rem 1.25rem 1.5rem;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.22s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .sheet-handle {
+            width: 2.5rem;
+            height: 0.28rem;
+            background: var(--border);
+            border-radius: 1rem;
+            margin: 0.6rem auto 1rem;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.1rem;
+        }
+
+        .sheet-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .chip {
+            padding: 0.55rem 1rem;
+            border-radius: 2rem;
+            background: var(--field-bg);
+            color: var(--muted);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .chip.active {
+            background: var(--navy);
+            color: white;
+        }
+
+        .date-range-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .date-range-field {
+            flex: 1;
+        }
+
+        .date-range-field label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 0.35rem;
+        }
+
+        .sheet-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .sheet-btn {
+            flex: 1;
+            padding: 0.85rem;
+            border-radius: 0.875rem;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .sheet-btn:hover {
+            opacity: 0.88;
+        }
+
+        .sheet-btn.reset {
+            background: #f2f3f7;
+            color: var(--text);
+        }
+
+        .sheet-btn.apply {
+            background: var(--navy);
+            color: white;
+        }
+
+        /* ── Transaction detail drawer ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 20, 0.45);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .detail-drawer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 95;
+            background: #fff;
+            border-radius: 1.5rem 1.5rem 0 0;
+            max-width: 430px;
+            margin: 0 auto;
+            padding: 0.6rem 1.25rem 1.5rem;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .detail-drawer.open {
+            transform: translateY(0);
+        }
+
+        .drawer-handle {
+            width: 2.5rem;
+            height: 0.28rem;
+            background: var(--border);
+            border-radius: 99px;
+            margin: 0.4rem auto 1rem;
+        }
+
+        .drawer-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .drawer-eyebrow {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.1rem;
+            gap: 0.75rem;
+        }
+
+        .drawer-header h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0 0 0.2rem;
+            color: var(--text);
+        }
+
+        .drawer-header p {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .drawer-delete-btn {
+            width: 2.4rem;
+            height: 2.4rem;
+            border-radius: 0.7rem;
+            background: var(--red-soft);
+            color: var(--red);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex: none;
+            transition: opacity 0.15s;
+        }
+
+        .drawer-delete-btn:hover {
+            opacity: 0.85;
+        }
+
+        .drawer-section {
+            margin-bottom: 1.3rem;
+        }
+
+        .drawer-section .flabel {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.5rem;
+        }
+
+        .drawer-amount-input {
+            width: 100%;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--text);
+            border: none;
+            border-bottom: 2px solid var(--navy);
+            background: transparent;
+            padding: 0.25rem 0;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .delete-confirm {
+            background: #fff0ee;
+            border: 1px solid #f3c9c0;
+            border-radius: 0.875rem;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.1rem;
+            gap: 0.75rem;
+        }
+
+        .delete-confirm p {
+            margin: 0;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .delete-confirm .actions {
+            display: flex;
+            gap: 0.4rem;
+            flex: none;
+        }
+
+        .btn-cancel {
+            border: none;
+            background: transparent;
+            color: var(--red);
+            font-weight: 700;
+            font-size: 0.78rem;
+            font-family: 'Poppins', sans-serif;
+            padding: 0.5rem 0.6rem;
+            cursor: pointer;
+        }
+
+        .btn-delete-confirm {
+            border: none;
+            background: var(--red);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.78rem;
+            font-family: 'Poppins', sans-serif;
+            padding: 0.5rem 0.85rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+        }
+
+        .btn-cancel:disabled,
+        .btn-delete-confirm:disabled {
+            opacity: 0.6;
+        }
+
+        .drawer-update-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #163A6B 0%, #070808 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .drawer-update-btn:hover {
+            opacity: 0.88;
+        }
+
+        .drawer-update-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ── Modals ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 2rem 1.75rem;
+            max-width: 22rem;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 0.875rem;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.85;
+        }
+
+        .modal-btn.cancel {
+            background: #f2f3f7;
+            color: var(--text);
+        }
+
+        .modal-btn.delete {
+            background: var(--red);
+            color: white;
+        }
+
+        .modal-btn.ok {
+            background: var(--navy);
+            color: white;
+            width: 100%;
+        }
+
+        /* ── Animations ── */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin {
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.18s ease;
+        }
+
+        /* ── iOS ── */
+        input[type="date"],
+        select {
+            -webkit-appearance: none;
+        }
+
+        @media (max-width: 640px) {
+            input[type="date"]::-webkit-date-and-time-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        /* ── Icons ── */
+        const SettingsIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+        );
+        const BackIcon = () => (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+            </svg>
+        );
+        const TrashIcon = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+        );
+        const CheckCircleIcon = () => (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" />
+            </svg>
+        );
+        const SpinnerIcon = ({ size = 20 }) => (
+            <svg className="spin" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+        );
+
+        /* ── Helpers (top-level, shared by views) ── */
+        const formatAmount = (n) => `Rp${Math.round(Number(n) || 0).toLocaleString('id-ID')}`;
+
+        const getDateLabel = (dateStr) => {
+            const d = new Date(dateStr);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            const sameDay = (a, b) => a.toDateString() === b.toDateString();
+            if (sameDay(d, today)) return 'Today';
+            if (sameDay(d, yesterday)) return 'Yesterday';
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        };
+
+        /* ── Modals (defined outside App — stable references) ── */
+        const AlertModal = ({ message, type, onClose }) => {
+            if (!message) return null;
+            return (
+                <div className="modal-overlay fade-in">
+                    <div className="modal-box">
+                        <div className="modal-icon" style={{ background: type === 'success' ? '#ecfdf5' : '#fff0ee' }}>
+                            {type === 'success'
+                                ? <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                : <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#d95f4b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                            }
+                        </div>
+                        <div className="modal-title">{message}</div>
+                        <button className="modal-btn ok" onClick={onClose}>OK</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const ConfirmModal = ({ message, onConfirm, onCancel, loading }) => {
+            if (!message) return null;
+            return (
+                <div className="modal-overlay fade-in">
+                    <div className="modal-box">
+                        {loading ? (
+                            <>
+                                <div className="modal-icon" style={{ background: '#F5F8FA' }}><SpinnerIcon size={30} /></div>
+                                <div className="modal-title">Deleting...</div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="modal-icon" style={{ background: '#fffbeb' }}>
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                        <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                                    </svg>
+                                </div>
+                                <div className="modal-title">{message}</div>
+                                <div className="modal-btn-row">
+                                    <button className="modal-btn cancel" onClick={onCancel}>Cancel</button>
+                                    <button className="modal-btn delete" onClick={onConfirm}>Delete</button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        /* ── Transaction detail drawer — defined OUTSIDE App ── */
+        const TransactionDrawer = ({
+            open, transaction, editDisplayAmount, onEditAmountChange,
+            deleteConfirmOpen, onRequestDelete, onCancelDelete, onConfirmDelete,
+            onUpdate, onClose, updateLoading, deleteLoading
+        }) => (
+            <>
+                <div className={`modal-backdrop${open ? ' open' : ''}`} onClick={onClose}></div>
+                <div className={`detail-drawer${open ? ' open' : ''}`}>
+                    <div className="drawer-handle" />
+                    {transaction && (
+                        <>
+                            <div className="drawer-top-row">
+                                <span className="drawer-eyebrow">Transaction Details</span>
+                                <button className="icon-btn" onClick={onClose} aria-label="Close">
+                                    <i className="ti ti-x" aria-hidden="true"></i>
+                                </button>
+                            </div>
+
+                            <div className="drawer-header">
+                                <div>
+                                    <h2>{transaction.description}</h2>
+                                    <p>{transaction.category} • {transaction.date}</p>
+                                </div>
+                                <button className="drawer-delete-btn" onClick={onRequestDelete} aria-label="Delete transaction">
+                                    <TrashIcon />
+                                </button>
+                            </div>
+
+                            {deleteConfirmOpen && (
+                                <div className="delete-confirm">
+                                    <p>Delete this transaction?</p>
+                                    <div className="actions">
+                                        <button className="btn-cancel" onClick={onCancelDelete} disabled={deleteLoading}>
+                                            Cancel
+                                        </button>
+                                        <button className="btn-delete-confirm" onClick={onConfirmDelete} disabled={deleteLoading}>
+                                            {deleteLoading ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="drawer-section">
+                                <div className="flabel">Amount</div>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    className="drawer-amount-input"
+                                    value={editDisplayAmount}
+                                    onChange={onEditAmountChange}
+                                    disabled={updateLoading || deleteLoading}
+                                />
+                            </div>
+
+                            <button className="drawer-update-btn" onClick={onUpdate} disabled={updateLoading || deleteLoading}>
+                                {updateLoading
+                                    ? <><SpinnerIcon size={18} /> Updating...</>
+                                    : <><CheckCircleIcon /> Update</>
+                                }
+                            </button>
+                        </>
+                    )}
+                </div>
+            </>
+        );
+
+        /* ── Filter by Date bottom sheet — defined OUTSIDE App ── */
+        const FilterSheet = ({ open, chip, setChip, fromDate, toDate, setFromDate, setToDate, onReset, onApply, onClose }) => {
+            if (!open) return null;
+            return (
+                <div className="sheet-overlay fade-in" onClick={onClose}>
+                    <div className="sheet-box" onClick={(e) => e.stopPropagation()}>
+                        <div className="sheet-handle" />
+                        <div className="sheet-header">
+                            <span className="sheet-title">Filter by Date</span>
+                            <button className="icon-btn" onClick={onClose} aria-label="Close">
+                                <i className="ti ti-x" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        <div className="chip-row">
+                            {[
+                                { key: 'today', label: 'Today' },
+                                { key: 'week', label: 'This Week' },
+                                { key: 'month', label: 'This Month' },
+                            ].map(({ key, label }) => (
+                                <button
+                                    key={key}
+                                    className={`chip${chip === key ? ' active' : ''}`}
+                                    onClick={() => setChip(key)}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="date-range-row">
+                            <div className="date-range-field">
+                                <label>From</label>
+                                <input
+                                    type="date"
+                                    className="field-box"
+                                    value={fromDate}
+                                    onChange={(e) => { setFromDate(e.target.value); setChip(null); }}
+                                />
+                            </div>
+                            <div className="date-range-field">
+                                <label>To</label>
+                                <input
+                                    type="date"
+                                    className="field-box"
+                                    value={toDate}
+                                    onChange={(e) => { setToDate(e.target.value); setChip(null); }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="sheet-actions">
+                            <button className="sheet-btn reset" onClick={onReset}>Reset</button>
+                            <button className="sheet-btn apply" onClick={onApply}>Apply Filter</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        /* ── HomeView — defined OUTSIDE App to avoid remount on state change ── */
+        const HomeView = ({
+            displayAmount, rawAmount, handleAmountChange,
+            formData, setFormData, categories, categoriesLoading,
+            loading, handleSubmit, onGoCategories, onGoHistory
+        }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                {/* Topbar */}
+                <div className="topbar">
+                    <span className="topbar-title">Expense Tracker</span>
+                    <button className="icon-btn" onClick={onGoCategories} title="Manage Categories">
+                        <SettingsIcon />
+                    </button>
+                </div>
+
+                {/* Amount hero */}
+                <div className="amount-hero">
+                    <div className="amount-label">Amount</div>
+                    <input
+                        className={`amount-input${displayAmount ? ' has-value' : ''}`}
+                        type="text"
+                        inputMode="numeric"
+                        value={displayAmount}
+                        onChange={handleAmountChange}
+                        placeholder="0"
+                        disabled={loading}
+                    />
+                    <div className="amount-underline" />
+                </div>
+
+                {/* Form card */}
+                <div className="form-card">
+                    {/* Date */}
+                    <div className="field-block">
+                        <label className="field-label">Date</label>
+                        <input
+                            type="date"
+                            className="field-box"
+                            value={formData.date}
+                            onChange={(e) => setFormData(f => ({ ...f, date: e.target.value }))}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    {/* Category */}
+                    <div className="field-block">
+                        <label className="field-label">Category</label>
+                        <select
+                            className="field-box"
+                            value={formData.category}
+                            onChange={(e) => setFormData(f => ({ ...f, category: e.target.value }))}
+                            disabled={loading || categoriesLoading}
+                        >
+                            <option value="">{categoriesLoading ? 'Loading...' : 'Select category'}</option>
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Description */}
+                    <div className="field-block">
+                        <label className="field-label">Description</label>
+                        <textarea
+                            className="field-box"
+                            value={formData.description}
+                            onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
+                            placeholder="Input description"
+                            rows={3}
+                            disabled={loading}
+                        />
+                    </div>
+                </div>
+
+                {/* Submit */}
+                <button className="btn-submit" onClick={handleSubmit} disabled={loading}>
+                    {loading
+                        ? <><SpinnerIcon size={20} /> Saving...</>
+                        : <><CheckCircleIcon /> Add Transaction</>
+                    }
+                </button>
+
+                {/* Stacked floating action buttons */}
+                <div className="fab-stack">
+                    <button
+                        className="fab-btn"
+                        onClick={onGoHistory}
+                        aria-label="View transaction history"
+                        title="Transaction History"
+                    >
+                        <i className="ti ti-history" aria-hidden="true"></i>
+                    </button>
+                    <a
+                        href="https://docs.google.com/spreadsheets/d/1OQrLMfieBIW7Ifg04flDkPehVdMfv6LxcXSzLIoDyDo/edit?usp=sharing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fab-btn"
+                        aria-label="Open Google Sheet"
+                        title="Open in Google Sheets"
+                    >
+                        <i className="ti ti-table-export" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        );
+
+        /* ── CategoryView — defined OUTSIDE App ── */
+        const CategoryView = ({
+            categories, newCategory, setNewCategory,
+            loading, handleAddCategory, handleDeleteRequest, onGoHome
+        }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <div className="cat-topbar">
+                    <button className="icon-btn" onClick={onGoHome}><BackIcon /></button>
+                    <span className="cat-topbar-title">Expense Categories</span>
+                </div>
+
+                <div className="cat-add-row">
+                    {loading ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', color: '#32445D' }}>
+                            <SpinnerIcon size={10} /> Processing...
+                        </div>
+                    ) : (
+                        <>
+                            <input
+                                type="text"
+                                className="cat-input"
+                                placeholder="Add new category"
+                                value={newCategory}
+                                onChange={(e) => setNewCategory(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
+                            />
+                            <button className="cat-add-btn" onClick={handleAddCategory}>+</button>
+                        </>
+                    )}
+                </div>
+
+                <div className="cat-list">
+                    {categories.map(cat => (
+                        <div key={cat} className="cat-item">
+                            <span className="cat-item-name">{cat}</span>
+                            <button className="cat-delete-btn" onClick={() => handleDeleteRequest(cat)}>
+                                <TrashIcon />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div >
+        );
+
+        /* ── HistoryView */
+        const HistoryView = ({
+            transactionsLoading, searchQuery, setSearchQuery,
+            monthTotal, groupedTransactions, onGoHome, onOpenFilter, filterActive, onOpenDetail
+        }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <div className="cat-topbar">
+                    <button className="icon-btn" onClick={onGoHome}><BackIcon /></button>
+                    <span className="cat-topbar-title">Transaction History</span>
+                </div>
+
+                <div className="search-row">
+                    <div className="search-input-wrap">
+                        <i className="ti ti-search" aria-hidden="true"></i>
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search transactions..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <button
+                        className={`filter-icon-btn${filterActive ? ' active' : ''}`}
+                        onClick={onOpenFilter}
+                        aria-label="Filter by date"
+                        title="Filter by date"
+                    >
+                        <i className="ti ti-filter" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                {transactionsLoading ? (
+                    <div className="tx-loading"><SpinnerIcon size={18} /> Loading transactions...</div>
+                ) : groupedTransactions.length === 0 ? (
+                    <div className="tx-empty">No transactions found</div>
+                ) : (
+                    groupedTransactions.map(({ label, items }) => (
+                        <div className="tx-section" key={label}>
+                            <div className="tx-section-title">{label}</div>
+                            <div className="tx-list">
+                                {items.map((t, i) => (
+                                    <div
+                                        className="tx-item"
+                                        key={`${label}-${i}`}
+                                        onClick={() => onOpenDetail(t)}
+                                    >
+                                        <div>
+                                            <span className="tx-cat">{t.category}</span>
+                                            <span className="tx-desc">{t.description}</span>
+                                            <span className="tx-meta">{t.date}</span>
+                                        </div>
+                                        <span className="tx-amount">-{formatAmount(t.total)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        );
+
+        /* ── App (state only, no JSX views inline) ── */
+        function App() {
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwB0eM2xWednq7B1bT6IVFvigxPfE0qMuktOHyd61FlpJvDUqsmx6_G-SHNHYrbwvxd6w/exec';
+
+            const [view, setView] = useState('home');
+            const [categories, setCategories] = useState([]);
+            const [categoriesLoading, setCategoriesLoading] = useState(true);
+            const [newCategory, setNewCategory] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [deleteLoading, setDeleteLoading] = useState(false);
+            const [alert, setAlert] = useState({ message: '', type: '' });
+            const [confirmDialog, setConfirmDialog] = useState({ message: '', category: '' });
+            const [rawAmount, setRawAmount] = useState('');
+            const [displayAmount, setDisplayAmount] = useState('');
+            const [formData, setFormData] = useState({
+                date: new Date().toISOString().split('T')[0],
+                category: '',
+                description: '',
+            });
+
+            // Transaction history state
+            const [transactions, setTransactions] = useState([]);
+            const [transactionsLoading, setTransactionsLoading] = useState(false);
+            const [transactionsLoaded, setTransactionsLoaded] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+
+            // Filter-by-date state
+            const [filterOpen, setFilterOpen] = useState(false);
+            const [chip, setChip] = useState(null);
+            const [fromDate, setFromDate] = useState('');
+            const [toDate, setToDate] = useState('');
+            const [appliedFrom, setAppliedFrom] = useState('');
+            const [appliedTo, setAppliedTo] = useState('');
+
+            // Transaction detail drawer state
+            const [selectedTx, setSelectedTx] = useState(null);
+            const [drawerOpen, setDrawerOpen] = useState(false);
+            const [editRawAmount, setEditRawAmount] = useState('');
+            const [editDisplayAmount, setEditDisplayAmount] = useState('');
+            const [updateTxLoading, setUpdateTxLoading] = useState(false);
+            const [deleteTxLoading, setDeleteTxLoading] = useState(false);
+            const [deleteTxConfirmOpen, setDeleteTxConfirmOpen] = useState(false);
+
+            useEffect(() => { loadCategories(); }, []);
+
+            // Keep the from/to date fields in sync with the selected quick-filter chip
+            useEffect(() => {
+                if (!chip) return;
+                const now = new Date();
+                const toStr = now.toISOString().split('T')[0];
+                let fromDt = new Date(now);
+                if (chip === 'today') {
+                    fromDt = now;
+                } else if (chip === 'week') {
+                    fromDt = new Date(now);
+                    fromDt.setDate(now.getDate() - now.getDay());
+                } else if (chip === 'month') {
+                    fromDt = new Date(now.getFullYear(), now.getMonth(), 1);
+                }
+                setFromDate(fromDt.toISOString().split('T')[0]);
+                setToDate(toStr);
+            }, [chip]);
+
+            const showAlert = (message, type) => setAlert({ message, type });
+            const closeAlert = () => setAlert({ message: '', type: '' });
+
+            const loadCategories = async () => {
+                setCategoriesLoading(true);
+                try {
+                    const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCategories`);
+                    const data = await res.json();
+                    if (data.categories?.length) setCategories(data.categories);
+                    else showAlert('Failed to load categories', 'error');
+                } catch {
+                    showAlert('Failed to retrieve categories', 'error');
+                } finally {
+                    setCategoriesLoading(false);
+                }
+            };
+
+            // Assumes an Apps Script action "getTransactions" returning { transactions: [{date, category, description, total}, ...] }
+            const loadTransactions = async () => {
+                setTransactionsLoading(true);
+                try {
+                    const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getTransactions`);
+                    const data = await res.json();
+                    if (data.transactions) setTransactions(data.transactions);
+                    else showAlert('Failed to load transactions', 'error');
+                } catch {
+                    showAlert('Failed to retrieve transactions', 'error');
+                } finally {
+                    setTransactionsLoading(false);
+                    setTransactionsLoaded(true);
+                }
+            };
+
+            const formatMonthYear = (ds) => {
+                const d = new Date(ds);
+                return `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]}'${d.getFullYear().toString().slice(-2)}`;
+            };
+
+            const handleAmountChange = (e) => {
+                const digits = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+                setRawAmount(digits);
+                setDisplayAmount(digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '');
+            };
+
+            const handleSubmit = async () => {
+                if (!formData.date || !formData.category || !formData.description || !rawAmount) {
+                    showAlert('All fields must be filled', 'error'); return;
+                }
+                setLoading(true);
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'addTransaction',
+                            month: formatMonthYear(formData.date),
+                            date: formData.date,
+                            category: formData.category,
+                            description: formData.description,
+                            total: parseFloat(rawAmount)
+                        })
+                    });
+                    setFormData({ date: new Date().toISOString().split('T')[0], category: '', description: '' });
+                    setRawAmount(''); setDisplayAmount('');
+                    showAlert('Transaction added successfully', 'success');
+                    // Refresh history so it stays current if the user visits it next
+                    if (transactionsLoaded) loadTransactions();
+                } catch {
+                    showAlert('Failed to add transaction', 'error');
+                } finally { setLoading(false); }
+            };
+
+            const handleAddCategory = async () => {
+                const trimmed = newCategory.trim();
+                if (!trimmed || categories.includes(trimmed)) return;
+                setLoading(true);
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'addCategory', category: trimmed })
+                    });
+                    setCategories(c => [...c, trimmed]);
+                    setNewCategory('');
+                    showAlert('Category added successfully', 'success');
+                } catch {
+                    showAlert('Failed to add category', 'error');
+                } finally { setLoading(false); }
+            };
+
+            const handleDeleteRequest = (cat) => {
+                setConfirmDialog({ message: `Delete category "${cat}"?`, category: cat });
+            };
+
+            const handleDeleteConfirm = async () => {
+                const cat = confirmDialog.category;
+                setDeleteLoading(true);
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'deleteCategory', category: cat })
+                    });
+                    setCategories(c => c.filter(x => x !== cat));
+                    setConfirmDialog({ message: '', category: '' });
+                    showAlert('Category deleted successfully', 'success');
+                } catch {
+                    showAlert('Failed to delete category', 'error');
+                } finally { setDeleteLoading(false); }
+            };
+
+            const onGoHistory = () => {
+                setView('history');
+                if (!transactionsLoaded) loadTransactions();
+            };
+
+            const openTransactionDetail = (tx) => {
+                setSelectedTx(tx);
+                const digits = String(Math.round(parseFloat(tx.total) || 0));
+                setEditRawAmount(digits);
+                setEditDisplayAmount(digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                setDeleteTxConfirmOpen(false);
+                setDrawerOpen(true);
+            };
+
+            const closeTransactionDetail = () => {
+                setDrawerOpen(false);
+                setDeleteTxConfirmOpen(false);
+            };
+
+            const handleEditAmountChange = (e) => {
+                const digits = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+                setEditRawAmount(digits);
+                setEditDisplayAmount(digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '');
+            };
+
+            const handleUpdateTransaction = async () => {
+                if (!selectedTx || !editRawAmount) return;
+                setUpdateTxLoading(true);
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'updateTransaction',
+                            no: selectedTx.no,
+                            total: parseFloat(editRawAmount)
+                        })
+                    });
+                    setTransactions(prev => prev.map(t =>
+                        t.no === selectedTx.no ? { ...t, total: parseFloat(editRawAmount) } : t
+                    ));
+                    showAlert('Transaction updated successfully', 'success');
+                    closeTransactionDetail();
+                } catch {
+                    showAlert('Failed to update transaction', 'error');
+                } finally {
+                    setUpdateTxLoading(false);
+                }
+            };
+
+            const handleDeleteTransactionRequest = () => setDeleteTxConfirmOpen(true);
+            const handleCancelDeleteTransaction = () => setDeleteTxConfirmOpen(false);
+
+            const handleConfirmDeleteTransaction = async () => {
+                if (!selectedTx) return;
+                setDeleteTxLoading(true);
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST', mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'deleteTransaction', no: selectedTx.no })
+                    });
+                    setTransactions(prev => prev.filter(t => t.no !== selectedTx.no));
+                    showAlert('Transaction deleted successfully', 'success');
+                    closeTransactionDetail();
+                } catch {
+                    showAlert('Failed to delete transaction', 'error');
+                } finally {
+                    setDeleteTxLoading(false);
+                }
+            };
+
+            const handleOpenFilter = () => setFilterOpen(true);
+            const handleCloseFilter = () => setFilterOpen(false);
+
+            const handleApplyFilter = () => {
+                setAppliedFrom(fromDate);
+                setAppliedTo(toDate);
+                setFilterOpen(false);
+            };
+
+            const handleResetFilter = () => {
+                setChip(null);
+                setFromDate('');
+                setToDate('');
+                setAppliedFrom('');
+                setAppliedTo('');
+                setFilterOpen(false);
+            };
+
+            // Derived data for the History view
+            const filteredTransactions = transactions.filter(t => {
+                const q = searchQuery.trim().toLowerCase();
+                const matchesSearch = !q
+                    || (t.description || '').toLowerCase().includes(q)
+                    || (t.category || '').toLowerCase().includes(q);
+                const d = new Date(t.date);
+                const matchesFrom = !appliedFrom || d >= new Date(appliedFrom);
+                const matchesTo = !appliedTo || d <= new Date(appliedTo);
+                return matchesSearch && matchesFrom && matchesTo;
+            });
+
+            const monthTotal = transactions
+                .filter(t => {
+                    const d = new Date(t.date);
+                    const now = new Date();
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                })
+                .reduce((sum, t) => sum + (parseFloat(t.total) || 0), 0);
+
+            const groupedTransactions = (() => {
+                const sorted = [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const map = new Map();
+                sorted.forEach(t => {
+                    const label = getDateLabel(t.date);
+                    if (!map.has(label)) map.set(label, []);
+                    map.get(label).push(t);
+                });
+                return Array.from(map.entries()).map(([label, items]) => ({ label, items }));
+            })();
+
+            const filterActive = Boolean(appliedFrom || appliedTo);
+
+            return (
+                <div className="page">
+                    {view === 'home' && (
+                        <HomeView
+                            displayAmount={displayAmount}
+                            rawAmount={rawAmount}
+                            handleAmountChange={handleAmountChange}
+                            formData={formData}
+                            setFormData={setFormData}
+                            categories={categories}
+                            categoriesLoading={categoriesLoading}
+                            loading={loading}
+                            handleSubmit={handleSubmit}
+                            onGoCategories={() => setView('categories')}
+                            onGoHistory={onGoHistory}
+                        />
+                    )}
+                    {view === 'categories' && (
+                        <CategoryView
+                            categories={categories}
+                            newCategory={newCategory}
+                            setNewCategory={setNewCategory}
+                            loading={loading}
+                            handleAddCategory={handleAddCategory}
+                            handleDeleteRequest={handleDeleteRequest}
+                            onGoHome={() => setView('home')}
+                        />
+                    )}
+                    {view === 'history' && (
+                        <HistoryView
+                            transactionsLoading={transactionsLoading}
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            monthTotal={monthTotal}
+                            groupedTransactions={groupedTransactions}
+                            onGoHome={() => setView('home')}
+                            onOpenFilter={handleOpenFilter}
+                            filterActive={filterActive}
+                            onOpenDetail={openTransactionDetail}
+                        />
+                    )}
+
+                    <FilterSheet
+                        open={filterOpen}
+                        chip={chip}
+                        setChip={setChip}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        setFromDate={setFromDate}
+                        setToDate={setToDate}
+                        onReset={handleResetFilter}
+                        onApply={handleApplyFilter}
+                        onClose={handleCloseFilter}
+                    />
+
+                    <TransactionDrawer
+                        open={drawerOpen}
+                        transaction={selectedTx}
+                        editDisplayAmount={editDisplayAmount}
+                        onEditAmountChange={handleEditAmountChange}
+                        deleteConfirmOpen={deleteTxConfirmOpen}
+                        onRequestDelete={handleDeleteTransactionRequest}
+                        onCancelDelete={handleCancelDeleteTransaction}
+                        onConfirmDelete={handleConfirmDeleteTransaction}
+                        onUpdate={handleUpdateTransaction}
+                        onClose={closeTransactionDetail}
+                        updateLoading={updateTxLoading}
+                        deleteLoading={deleteTxLoading}
+                    />
+
+                    <AlertModal message={alert.message} type={alert.type} onClose={closeAlert} />
+                    <ConfirmModal
+                        message={confirmDialog.message}
+                        onConfirm={handleDeleteConfirm}
+                        onCancel={() => setConfirmDialog({ message: '', category: '' })}
+                        loading={deleteLoading}
+                    />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
