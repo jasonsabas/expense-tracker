@@ -28,6 +28,8 @@
             --muted: #32445D;
             --red-soft: #fff0ee;
             --red: #d95f4b;
+            --green: #10B981;
+            --page-w: 430px;
         }
 
         * {
@@ -44,7 +46,7 @@
         }
 
         .page {
-            max-width: 430px;
+            max-width: var(--page-w);
             margin: 0 auto;
             min-height: 100vh;
             background: var(--bg);
@@ -151,7 +153,6 @@
             display: block;
         }
 
-        /* Outlined input box — matches screenshot */
         .field-box {
             width: 100%;
             background: white;
@@ -175,7 +176,6 @@
             color: #b8bccf;
         }
 
-        /* Date — show calendar picker icon */
         input[type="date"].field-box {
             min-height: 48px;
         }
@@ -185,7 +185,6 @@
             opacity: 0.5;
         }
 
-        /* Select chevron */
         select.field-box {
             cursor: pointer;
             background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7f96' stroke-width='2.5' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -194,7 +193,6 @@
             padding-right: 2.5rem;
         }
 
-        /* Textarea */
         textarea.field-box {
             resize: none;
             min-height: 90px;
@@ -207,7 +205,6 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            /* background: var(--navy); */
             background: linear-gradient(135deg, #163A6B 0%, #070808 100%);
             color: white;
             border: none;
@@ -297,7 +294,6 @@
             font-family: 'Poppins', sans-serif;
             font-size: 0.9rem;
             outline: none;
-            /* background: var(--field-bg); */
             color: var(--text);
             transition: border-color 0.2s;
         }
@@ -373,16 +369,6 @@
         }
 
         /* ── History view ── */
-        /* .total-card {
-            background: white;
-            border-radius: 1.25rem;
-            margin: 0 1rem 1rem;
-            padding: 1.1rem 1.25rem;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-            position: relative;
-            overflow: hidden;
-        } */
-
         .total-label {
             font-size: 0.7rem;
             font-weight: 600;
@@ -548,6 +534,108 @@
             padding: 1.5rem 1rem;
             color: var(--muted);
             font-size: 0.9rem;
+        }
+
+        /* ── Monthly summary view ── */
+        .summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            padding: 0 1rem 2rem;
+        }
+
+        .sum-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem 1.1rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .sum-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .sum-month {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--navy);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
+        .sum-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            display: block;
+        }
+
+        .sum-meta {
+            font-size: 0.68rem;
+            color: #9aa0b4;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .sum-delta {
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            padding: 0.25rem 0.55rem;
+            border-radius: 2rem;
+        }
+
+        .sum-delta.up {
+            color: var(--red);
+            background: var(--red-soft);
+        }
+
+        .sum-delta.down {
+            color: var(--green);
+            background: #ecfdf5;
+        }
+
+        .sum-cats {
+            margin-top: 0.9rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .sum-cat-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .sum-cat-amt {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sum-bar {
+            height: 4px;
+            background: var(--field-bg);
+            border-radius: 4px;
+            margin-top: 0.3rem;
+            overflow: hidden;
+        }
+
+        .sum-bar-fill {
+            height: 100%;
+            background: var(--navy);
+            border-radius: 4px;
         }
 
         /* ── Filter bottom sheet ── */
@@ -998,15 +1086,83 @@
                 text-align: left;
             }
         }
+
+        /* ═══════════════ Desktop / tablet ═══════════════
+           Same components and styling as mobile; only the
+           container width and list/form layout expand. */
+        @media (min-width: 768px) {
+            :root {
+                --page-w: 760px;
+            }
+
+            /* keep FABs aligned to the page column instead of the window edge */
+            .fab-stack {
+                right: max(1.5rem, calc((100vw - var(--page-w)) / 2 + 1.5rem));
+            }
+
+            /* Home: centered form, date + category side by side */
+            .home-wrap {
+                max-width: 640px;
+                margin: 0 auto;
+            }
+
+            .home-wrap .form-card {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                column-gap: 1rem;
+            }
+
+            .home-wrap .field-block.full {
+                grid-column: 1 / -1;
+            }
+
+            /* History / Categories / Summary: multi-column lists */
+            .tx-list {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .cat-list {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                align-content: start;
+            }
+
+            .summary-list {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                align-items: start;
+            }
+
+            .search-row {
+                max-width: 560px;
+            }
+
+            .cat-add-row {
+                max-width: 560px;
+            }
+        }
+
+        @media (min-width: 1100px) {
+            :root {
+                --page-w: 1080px;
+            }
+
+            .tx-list,
+            .cat-list,
+            .summary-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
     </style>
 </head>
 
 <body>
     <div id="app"></div>
 
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
@@ -1042,14 +1198,41 @@
             </svg>
         );
 
+        /* ── Date helpers (LOCAL time — avoids the UTC off-by-one bug) ── */
+        const pad2 = (n) => String(n).padStart(2, '0');
+        const toYMD = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        const todayYMD = () => toYMD(new Date());
+        // Accepts 'YYYY-MM-DD' or any date/ISO string; returns local 'YYYY-MM-DD'
+        const normalizeDate = (v) => {
+            if (!v) return '';
+            const s = String(v);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+            const d = new Date(s);
+            return isNaN(d.getTime()) ? s : toYMD(d);
+        };
+        const parseYMD = (s) => {
+            const [y, m, d] = String(s).split('-').map(Number);
+            return new Date(y, (m || 1) - 1, d || 1);
+        };
+        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthLabel = (ym) => {
+            const [y, m] = ym.split('-').map(Number);
+            return `${MONTHS[m - 1]} ${y}`;
+        };
+        const prevMonthKey = (ym) => {
+            const [y, m] = ym.split('-').map(Number);
+            return toYMD(new Date(y, m - 2, 1)).slice(0, 7);
+        };
+        const formatDigits = (digits) => digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+        const cleanDigits = (value) => value.replace(/\D/g, '').replace(/^0+/, '');
+
         /* ── Helpers (top-level, shared by views) ── */
         const formatAmount = (n) => `Rp${Math.round(Number(n) || 0).toLocaleString('id-ID')}`;
 
         const getDateLabel = (dateStr) => {
-            const d = new Date(dateStr);
+            const d = parseYMD(dateStr);
             const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(today.getDate() - 1);
+            const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
             const sameDay = (a, b) => a.toDateString() === b.toDateString();
             if (sameDay(d, today)) return 'Today';
             if (sameDay(d, yesterday)) return 'Yesterday';
@@ -1236,86 +1419,96 @@
         const HomeView = ({
             displayAmount, rawAmount, handleAmountChange,
             formData, setFormData, categories, categoriesLoading,
-            loading, handleSubmit, onGoCategories, onGoHistory
+            loading, handleSubmit, onGoCategories, onGoHistory, onGoSummary
         }) => (
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                {/* Topbar */}
-                <div className="topbar">
-                    <span className="topbar-title">Expense Tracker</span>
-                    <button className="icon-btn" onClick={onGoCategories} title="Manage Categories">
-                        <SettingsIcon />
+                <div className="home-wrap">
+                    {/* Topbar */}
+                    <div className="topbar">
+                        <span className="topbar-title">Expense Tracker</span>
+                        <button className="icon-btn" onClick={onGoCategories} title="Manage Categories">
+                            <SettingsIcon />
+                        </button>
+                    </div>
+
+                    {/* Amount hero */}
+                    <div className="amount-hero">
+                        <div className="amount-label">Amount</div>
+                        <input
+                            className={`amount-input${displayAmount ? ' has-value' : ''}`}
+                            type="text"
+                            inputMode="numeric"
+                            value={displayAmount}
+                            onChange={handleAmountChange}
+                            placeholder="0"
+                            disabled={loading}
+                        />
+                        <div className="amount-underline" />
+                    </div>
+
+                    {/* Form card */}
+                    <div className="form-card">
+                        {/* Date */}
+                        <div className="field-block">
+                            <label className="field-label">Date</label>
+                            <input
+                                type="date"
+                                className="field-box"
+                                value={formData.date}
+                                onChange={(e) => setFormData(f => ({ ...f, date: e.target.value }))}
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {/* Category */}
+                        <div className="field-block">
+                            <label className="field-label">Category</label>
+                            <select
+                                className="field-box"
+                                value={formData.category}
+                                onChange={(e) => setFormData(f => ({ ...f, category: e.target.value }))}
+                                disabled={loading || categoriesLoading}
+                            >
+                                <option value="">{categoriesLoading ? 'Loading...' : 'Select category'}</option>
+                                {categories.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Description */}
+                        <div className="field-block full">
+                            <label className="field-label">Description</label>
+                            <textarea
+                                className="field-box"
+                                value={formData.description}
+                                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
+                                placeholder="Input description"
+                                rows={3}
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Submit */}
+                    <button className="btn-submit" onClick={handleSubmit} disabled={loading}>
+                        {loading
+                            ? <><SpinnerIcon size={20} /> Saving...</>
+                            : <><CheckCircleIcon /> Add Transaction</>
+                        }
                     </button>
                 </div>
 
-                {/* Amount hero */}
-                <div className="amount-hero">
-                    <div className="amount-label">Amount</div>
-                    <input
-                        className={`amount-input${displayAmount ? ' has-value' : ''}`}
-                        type="text"
-                        inputMode="numeric"
-                        value={displayAmount}
-                        onChange={handleAmountChange}
-                        placeholder="0"
-                        disabled={loading}
-                    />
-                    <div className="amount-underline" />
-                </div>
-
-                {/* Form card */}
-                <div className="form-card">
-                    {/* Date */}
-                    <div className="field-block">
-                        <label className="field-label">Date</label>
-                        <input
-                            type="date"
-                            className="field-box"
-                            value={formData.date}
-                            onChange={(e) => setFormData(f => ({ ...f, date: e.target.value }))}
-                            disabled={loading}
-                        />
-                    </div>
-
-                    {/* Category */}
-                    <div className="field-block">
-                        <label className="field-label">Category</label>
-                        <select
-                            className="field-box"
-                            value={formData.category}
-                            onChange={(e) => setFormData(f => ({ ...f, category: e.target.value }))}
-                            disabled={loading || categoriesLoading}
-                        >
-                            <option value="">{categoriesLoading ? 'Loading...' : 'Select category'}</option>
-                            {categories.map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Description */}
-                    <div className="field-block">
-                        <label className="field-label">Description</label>
-                        <textarea
-                            className="field-box"
-                            value={formData.description}
-                            onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                            placeholder="Input description"
-                            rows={3}
-                            disabled={loading}
-                        />
-                    </div>
-                </div>
-
-                {/* Submit */}
-                <button className="btn-submit" onClick={handleSubmit} disabled={loading}>
-                    {loading
-                        ? <><SpinnerIcon size={20} /> Saving...</>
-                        : <><CheckCircleIcon /> Add Transaction</>
-                    }
-                </button>
-
                 {/* Stacked floating action buttons */}
                 <div className="fab-stack">
+                    <button
+                        className="fab-btn"
+                        onClick={onGoSummary}
+                        aria-label="View monthly summary"
+                        title="Monthly Summary"
+                    >
+                        <i className="ti ti-chart-bar" aria-hidden="true"></i>
+                    </button>
                     <button
                         className="fab-btn"
                         onClick={onGoHistory}
@@ -1362,7 +1555,7 @@
                                 placeholder="Add new category"
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                             />
                             <button className="cat-add-btn" onClick={handleAddCategory}>+</button>
                         </>
@@ -1379,13 +1572,13 @@
                         </div>
                     ))}
                 </div>
-            </div >
+            </div>
         );
 
-        /* ── HistoryView */
+        /* ── HistoryView ── */
         const HistoryView = ({
             transactionsLoading, searchQuery, setSearchQuery,
-            monthTotal, groupedTransactions, onGoHome, onOpenFilter, filterActive, onOpenDetail
+            groupedTransactions, onGoHome, onOpenFilter, filterActive, onOpenDetail
         }) => (
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                 <div className="cat-topbar">
@@ -1426,7 +1619,7 @@
                                 {items.map((t, i) => (
                                     <div
                                         className="tx-item"
-                                        key={`${label}-${i}`}
+                                        key={t.no !== undefined ? `tx-${t.no}` : `${label}-${i}`}
                                         onClick={() => onOpenDetail(t)}
                                     >
                                         <div>
@@ -1440,6 +1633,59 @@
                             </div>
                         </div>
                     ))
+                )}
+            </div>
+        );
+
+        /* ── SummaryView (expense per month) — defined OUTSIDE App ── */
+        const SummaryView = ({ transactionsLoading, months, currentMonthKey, onGoHome }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <div className="cat-topbar">
+                    <button className="icon-btn" onClick={onGoHome}><BackIcon /></button>
+                    <span className="cat-topbar-title">Monthly Summary</span>
+                </div>
+
+                {transactionsLoading ? (
+                    <div className="tx-loading"><SpinnerIcon size={18} /> Loading summary...</div>
+                ) : months.length === 0 ? (
+                    <div className="tx-empty">No transactions yet</div>
+                ) : (
+                    <div className="summary-list">
+                        {months.map(m => (
+                            <div className="sum-card" key={m.key}>
+                                <div className="sum-head">
+                                    <div>
+                                        <span className="sum-month">
+                                            {m.label}{m.key === currentMonthKey ? ' • This month' : ''}
+                                        </span>
+                                        <span className="sum-total">{formatAmount(m.total)}</span>
+                                        <div className="sum-meta">
+                                            {m.count} transaction{m.count === 1 ? '' : 's'}
+                                        </div>
+                                    </div>
+                                    {m.delta !== null && Math.abs(m.delta) >= 0.5 && (
+                                        <span className={`sum-delta ${m.delta > 0 ? 'up' : 'down'}`}>
+                                            {m.delta > 0 ? '▲' : '▼'} {Math.abs(Math.round(m.delta))}%
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="sum-cats">
+                                    {m.cats.map(c => (
+                                        <div key={c.name}>
+                                            <div className="sum-cat-row">
+                                                <span>{c.name}</span>
+                                                <span className="sum-cat-amt">{formatAmount(c.total)}</span>
+                                            </div>
+                                            <div className="sum-bar">
+                                                <div className="sum-bar-fill" style={{ width: `${c.pct}%` }} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         );
@@ -1459,7 +1705,7 @@
             const [rawAmount, setRawAmount] = useState('');
             const [displayAmount, setDisplayAmount] = useState('');
             const [formData, setFormData] = useState({
-                date: new Date().toISOString().split('T')[0],
+                date: todayYMD(),
                 category: '',
                 description: '',
             });
@@ -1493,18 +1739,14 @@
             useEffect(() => {
                 if (!chip) return;
                 const now = new Date();
-                const toStr = now.toISOString().split('T')[0];
-                let fromDt = new Date(now);
-                if (chip === 'today') {
-                    fromDt = now;
-                } else if (chip === 'week') {
-                    fromDt = new Date(now);
-                    fromDt.setDate(now.getDate() - now.getDay());
+                let fromDt = now;
+                if (chip === 'week') {
+                    fromDt = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
                 } else if (chip === 'month') {
                     fromDt = new Date(now.getFullYear(), now.getMonth(), 1);
                 }
-                setFromDate(fromDt.toISOString().split('T')[0]);
-                setToDate(toStr);
+                setFromDate(toYMD(fromDt));
+                setToDate(toYMD(now));
             }, [chip]);
 
             const showAlert = (message, type) => setAlert({ message, type });
@@ -1524,14 +1766,17 @@
                 }
             };
 
-            // Assumes an Apps Script action "getTransactions" returning { transactions: [{date, category, description, total}, ...] }
+            // Assumes an Apps Script action "getTransactions" returning { transactions: [{no, date, category, description, total}, ...] }
             const loadTransactions = async () => {
                 setTransactionsLoading(true);
                 try {
                     const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getTransactions`);
                     const data = await res.json();
-                    if (data.transactions) setTransactions(data.transactions);
-                    else showAlert('Failed to load transactions', 'error');
+                    if (data.transactions) {
+                        setTransactions(data.transactions.map(t => ({ ...t, date: normalizeDate(t.date) })));
+                    } else {
+                        showAlert('Failed to load transactions', 'error');
+                    }
                 } catch {
                     showAlert('Failed to retrieve transactions', 'error');
                 } finally {
@@ -1541,18 +1786,19 @@
             };
 
             const formatMonthYear = (ds) => {
-                const d = new Date(ds);
-                return `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]}'${d.getFullYear().toString().slice(-2)}`;
+                const d = parseYMD(ds);
+                return `${MONTHS[d.getMonth()]}'${d.getFullYear().toString().slice(-2)}`;
             };
 
             const handleAmountChange = (e) => {
-                const digits = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+                const digits = cleanDigits(e.target.value);
                 setRawAmount(digits);
-                setDisplayAmount(digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '');
+                setDisplayAmount(formatDigits(digits));
             };
 
             const handleSubmit = async () => {
-                if (!formData.date || !formData.category || !formData.description || !rawAmount) {
+                const description = formData.description.trim();
+                if (!formData.date || !formData.category || !description || !rawAmount) {
                     showAlert('All fields must be filled', 'error'); return;
                 }
                 setLoading(true);
@@ -1565,14 +1811,14 @@
                             month: formatMonthYear(formData.date),
                             date: formData.date,
                             category: formData.category,
-                            description: formData.description,
+                            description,
                             total: parseFloat(rawAmount)
                         })
                     });
-                    setFormData({ date: new Date().toISOString().split('T')[0], category: '', description: '' });
+                    setFormData({ date: todayYMD(), category: '', description: '' });
                     setRawAmount(''); setDisplayAmount('');
                     showAlert('Transaction added successfully', 'success');
-                    // Refresh history so it stays current if the user visits it next
+                    // Refresh so history/summary stay current (new rows need their `no` from the sheet)
                     if (transactionsLoaded) loadTransactions();
                 } catch {
                     showAlert('Failed to add transaction', 'error');
@@ -1581,7 +1827,7 @@
 
             const handleAddCategory = async () => {
                 const trimmed = newCategory.trim();
-                if (!trimmed || categories.includes(trimmed)) return;
+                if (!trimmed || categories.some(c => c.toLowerCase() === trimmed.toLowerCase())) return;
                 setLoading(true);
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, {
@@ -1623,11 +1869,16 @@
                 if (!transactionsLoaded) loadTransactions();
             };
 
+            const onGoSummary = () => {
+                setView('summary');
+                if (!transactionsLoaded) loadTransactions();
+            };
+
             const openTransactionDetail = (tx) => {
                 setSelectedTx(tx);
                 const digits = String(Math.round(parseFloat(tx.total) || 0));
                 setEditRawAmount(digits);
-                setEditDisplayAmount(digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                setEditDisplayAmount(formatDigits(digits));
                 setDeleteTxConfirmOpen(false);
                 setDrawerOpen(true);
             };
@@ -1638,9 +1889,9 @@
             };
 
             const handleEditAmountChange = (e) => {
-                const digits = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+                const digits = cleanDigits(e.target.value);
                 setEditRawAmount(digits);
-                setEditDisplayAmount(digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '');
+                setEditDisplayAmount(formatDigits(digits));
             };
 
             const handleUpdateTransaction = async () => {
@@ -1708,28 +1959,19 @@
                 setFilterOpen(false);
             };
 
-            // Derived data for the History view
+            // Derived data — dates are normalized 'YYYY-MM-DD', so string comparison is safe
             const filteredTransactions = transactions.filter(t => {
                 const q = searchQuery.trim().toLowerCase();
                 const matchesSearch = !q
                     || (t.description || '').toLowerCase().includes(q)
                     || (t.category || '').toLowerCase().includes(q);
-                const d = new Date(t.date);
-                const matchesFrom = !appliedFrom || d >= new Date(appliedFrom);
-                const matchesTo = !appliedTo || d <= new Date(appliedTo);
+                const matchesFrom = !appliedFrom || t.date >= appliedFrom;
+                const matchesTo = !appliedTo || t.date <= appliedTo;
                 return matchesSearch && matchesFrom && matchesTo;
             });
 
-            const monthTotal = transactions
-                .filter(t => {
-                    const d = new Date(t.date);
-                    const now = new Date();
-                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                })
-                .reduce((sum, t) => sum + (parseFloat(t.total) || 0), 0);
-
             const groupedTransactions = (() => {
-                const sorted = [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const sorted = [...filteredTransactions].sort((a, b) => b.date.localeCompare(a.date));
                 const map = new Map();
                 sorted.forEach(t => {
                     const label = getDateLabel(t.date);
@@ -1740,6 +1982,38 @@
             })();
 
             const filterActive = Boolean(appliedFrom || appliedTo);
+
+            // Monthly summary (newest first), computed from loaded transactions
+            const currentMonthKey = todayYMD().slice(0, 7);
+            const monthlySummary = (() => {
+                const map = new Map();
+                transactions.forEach(t => {
+                    const key = (t.date || '').slice(0, 7);
+                    if (!/^\d{4}-\d{2}$/.test(key)) return;
+                    const amt = parseFloat(t.total) || 0;
+                    if (!map.has(key)) map.set(key, { key, total: 0, count: 0, cats: new Map() });
+                    const m = map.get(key);
+                    m.total += amt;
+                    m.count += 1;
+                    const c = t.category || 'Uncategorized';
+                    m.cats.set(c, (m.cats.get(c) || 0) + amt);
+                });
+                return Array.from(map.values())
+                    .sort((a, b) => b.key.localeCompare(a.key))
+                    .map(m => {
+                        const prev = map.get(prevMonthKey(m.key));
+                        return {
+                            key: m.key,
+                            label: monthLabel(m.key),
+                            total: m.total,
+                            count: m.count,
+                            delta: prev && prev.total > 0 ? ((m.total - prev.total) / prev.total) * 100 : null,
+                            cats: Array.from(m.cats.entries())
+                                .map(([name, total]) => ({ name, total, pct: m.total > 0 ? (total / m.total) * 100 : 0 }))
+                                .sort((a, b) => b.total - a.total),
+                        };
+                    });
+            })();
 
             return (
                 <div className="page">
@@ -1756,6 +2030,7 @@
                             handleSubmit={handleSubmit}
                             onGoCategories={() => setView('categories')}
                             onGoHistory={onGoHistory}
+                            onGoSummary={onGoSummary}
                         />
                     )}
                     {view === 'categories' && (
@@ -1774,12 +2049,19 @@
                             transactionsLoading={transactionsLoading}
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
-                            monthTotal={monthTotal}
                             groupedTransactions={groupedTransactions}
                             onGoHome={() => setView('home')}
                             onOpenFilter={handleOpenFilter}
                             filterActive={filterActive}
                             onOpenDetail={openTransactionDetail}
+                        />
+                    )}
+                    {view === 'summary' && (
+                        <SummaryView
+                            transactionsLoading={transactionsLoading}
+                            months={monthlySummary}
+                            currentMonthKey={currentMonthKey}
+                            onGoHome={() => setView('home')}
                         />
                     )}
 
