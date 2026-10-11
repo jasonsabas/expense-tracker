@@ -1415,6 +1415,30 @@
             );
         };
 
+        /* ── Floating action buttons — shared by Home / History / Summary ── */
+        const FabStack = ({ current, onGoSummary, onGoHistory }) => (
+            <div className="fab-stack">
+                {current !== 'summary' && (
+                    <button className="fab-btn" onClick={onGoSummary}
+                        aria-label="View monthly summary" title="Monthly Summary">
+                        <i className="ti ti-chart-bar" aria-hidden="true"></i>
+                    </button>
+                )}
+                {current !== 'history' && (
+                    <button className="fab-btn" onClick={onGoHistory}
+                        aria-label="View transaction history" title="Transaction History">
+                        <i className="ti ti-history" aria-hidden="true"></i>
+                    </button>
+                )}
+                <a
+                    href="https://docs.google.com/spreadsheets/d/1OQrLMfieBIW7Ifg04flDkPehVdMfv6LxcXSzLIoDyDo/edit?usp=sharing"
+                    target="_blank" rel="noopener noreferrer"
+                    className="fab-btn" aria-label="Open Google Sheet" title="Open in Google Sheets">
+                    <i className="ti ti-table-export" aria-hidden="true"></i>
+                </a>
+            </div>
+        );
+
         /* ── HomeView — defined OUTSIDE App to avoid remount on state change ── */
         const HomeView = ({
             displayAmount, rawAmount, handleAmountChange,
@@ -1499,35 +1523,7 @@
                     </button>
                 </div>
 
-                {/* Stacked floating action buttons */}
-                <div className="fab-stack">
-                    <button
-                        className="fab-btn"
-                        onClick={onGoSummary}
-                        aria-label="View monthly summary"
-                        title="Monthly Summary"
-                    >
-                        <i className="ti ti-chart-bar" aria-hidden="true"></i>
-                    </button>
-                    <button
-                        className="fab-btn"
-                        onClick={onGoHistory}
-                        aria-label="View transaction history"
-                        title="Transaction History"
-                    >
-                        <i className="ti ti-history" aria-hidden="true"></i>
-                    </button>
-                    <a
-                        href="https://docs.google.com/spreadsheets/d/1OQrLMfieBIW7Ifg04flDkPehVdMfv6LxcXSzLIoDyDo/edit?usp=sharing"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="fab-btn"
-                        aria-label="Open Google Sheet"
-                        title="Open in Google Sheets"
-                    >
-                        <i className="ti ti-table-export" aria-hidden="true"></i>
-                    </a>
-                </div>
+                <FabStack current="home" onGoSummary={onGoSummary} onGoHistory={onGoHistory} />
             </div>
         );
 
@@ -1578,9 +1574,9 @@
         /* ── HistoryView ── */
         const HistoryView = ({
             transactionsLoading, searchQuery, setSearchQuery,
-            groupedTransactions, onGoHome, onOpenFilter, filterActive, onOpenDetail
+            groupedTransactions, onGoHome, onGoHistory, onGoSummary, onOpenFilter, filterActive, onOpenDetail
         }) => (
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', paddingBottom: '9rem' }}>
                 <div className="cat-topbar">
                     <button className="icon-btn" onClick={onGoHome}><BackIcon /></button>
                     <span className="cat-topbar-title">Transaction History</span>
@@ -1634,12 +1630,14 @@
                         </div>
                     ))
                 )}
+
+                <FabStack current="history" onGoSummary={onGoSummary} onGoHistory={onGoHistory} />
             </div>
         );
 
         /* ── SummaryView (expense per month) — defined OUTSIDE App ── */
-        const SummaryView = ({ transactionsLoading, months, currentMonthKey, onGoHome }) => (
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        const SummaryView = ({ transactionsLoading, months, currentMonthKey, onGoHome, onGoHistory, onGoSummary }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', paddingBottom: '9rem' }}>
                 <div className="cat-topbar">
                     <button className="icon-btn" onClick={onGoHome}><BackIcon /></button>
                     <span className="cat-topbar-title">Monthly Summary</span>
@@ -1687,6 +1685,8 @@
                         ))}
                     </div>
                 )}
+
+                <FabStack current="summary" onGoSummary={onGoSummary} onGoHistory={onGoHistory} />
             </div>
         );
 
@@ -2051,6 +2051,8 @@
                             setSearchQuery={setSearchQuery}
                             groupedTransactions={groupedTransactions}
                             onGoHome={() => setView('home')}
+                            onGoHistory={onGoHistory}
+                            onGoSummary={onGoSummary}
                             onOpenFilter={handleOpenFilter}
                             filterActive={filterActive}
                             onOpenDetail={openTransactionDetail}
@@ -2062,6 +2064,8 @@
                             months={monthlySummary}
                             currentMonthKey={currentMonthKey}
                             onGoHome={() => setView('home')}
+                            onGoHistory={onGoHistory}
+                            onGoSummary={onGoSummary}
                         />
                     )}
 
