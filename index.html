@@ -850,23 +850,30 @@
             letter-spacing: 0.03em;
         }
 
-        .drawer-header > div:first-child { flex: 1; min-width: 0; }
+        .drawer-title-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            cursor: pointer;
+            margin: 0 0 0.2rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .drawer-title-btn h2 { margin: 0; }
+        .drawer-title-btn i { font-size: 0.9rem; color: var(--muted); opacity: 0.6; }
 
         .drawer-title-input {
             width: 100%;
             font-size: 1.05rem;
             font-weight: 700;
             color: var(--text);
-            border: none;
-            border-bottom: 1.5px dashed var(--border);
-            background: transparent;
-            padding: 0.1rem 0;
+            border: 1.5px solid var(--navy);
+            border-radius: 0.6rem;
+            background: var(--field-bg);
+            padding: 0.35rem 0.6rem;
             margin: 0 0 0.3rem;
             outline: none;
             font-family: 'Poppins', sans-serif;
         }
-        .drawer-title-input:focus { border-bottom: 1.5px solid var(--navy); }
-
 
         .drawer-delete-btn {
             width: 2.4rem;
@@ -1312,7 +1319,13 @@
             editDescription, onEditDescriptionChange,
             deleteConfirmOpen, onRequestDelete, onCancelDelete, onConfirmDelete,
             onUpdate, onClose, updateLoading, deleteLoading
-        }) => (
+        }) => {
+            const [editingTitle, setEditingTitle] = useState(false);
+
+            // always start in read mode when the drawer opens/closes or the transaction changes
+            useEffect(() => { setEditingTitle(false); }, [open, transaction]);
+
+            return (
             <>
                 <div className={`modal-backdrop${open ? ' open' : ''}`} onClick={onClose}></div>
                 <div className={`detail-drawer${open ? ' open' : ''}`}>
@@ -1328,7 +1341,24 @@
 
                             <div className="drawer-header">
                                 <div>
-                                    <h2>{transaction.description}</h2>
+                                    {editingTitle ? (
+                                        <input
+                                            type="text"
+                                            className="drawer-title-input"
+                                            value={editDescription}
+                                            onChange={onEditDescriptionChange}
+                                            onBlur={() => setEditingTitle(false)}
+                                            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                                            placeholder="Description"
+                                            disabled={updateLoading || deleteLoading}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <div className="drawer-title-btn" onClick={() => setEditingTitle(true)}>
+                                            <h2>{editDescription || 'Add description'}</h2>
+                                            <i className="ti ti-pencil" aria-hidden="true"></i>
+                                        </div>
+                                    )}
                                     <p>{transaction.category} • {transaction.date}</p>
                                 </div>
                                 <button className="drawer-delete-btn" onClick={onRequestDelete} aria-label="Delete transaction">
@@ -1384,7 +1414,8 @@
                     )}
                 </div>
             </>
-        );
+            );
+        };
 
         /* ── Filter by Date bottom sheet — defined OUTSIDE App ── */
         const FilterSheet = ({ open, chip, setChip, fromDate, toDate, setFromDate, setToDate, onReset, onApply, onClose }) => {
