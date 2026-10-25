@@ -850,6 +850,24 @@
             letter-spacing: 0.03em;
         }
 
+        .drawer-header > div:first-child { flex: 1; min-width: 0; }
+
+        .drawer-title-input {
+            width: 100%;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            border: none;
+            border-bottom: 1.5px dashed var(--border);
+            background: transparent;
+            padding: 0.1rem 0;
+            margin: 0 0 0.3rem;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        .drawer-title-input:focus { border-bottom: 1.5px solid var(--navy); }
+
+
         .drawer-delete-btn {
             width: 2.4rem;
             height: 2.4rem;
@@ -1291,6 +1309,7 @@
         /* ── Transaction detail drawer — defined OUTSIDE App ── */
         const TransactionDrawer = ({
             open, transaction, editDisplayAmount, onEditAmountChange,
+            editDescription, onEditDescriptionChange,
             deleteConfirmOpen, onRequestDelete, onCancelDelete, onConfirmDelete,
             onUpdate, onClose, updateLoading, deleteLoading
         }) => (
@@ -1341,6 +1360,18 @@
                                     onChange={onEditAmountChange}
                                     disabled={updateLoading || deleteLoading}
                                 />
+                            </div>
+
+                            <div>
+                                <input
+                                    type="text"
+                                    className="drawer-title-input"
+                                    value={editDescription}
+                                    onChange={onEditDescriptionChange}
+                                    placeholder="Description"
+                                    disabled={updateLoading || deleteLoading}
+                                />
+                                <p>{transaction.category} • {transaction.date}</p>
                             </div>
 
                             <button className="drawer-update-btn" onClick={onUpdate} disabled={updateLoading || deleteLoading}>
@@ -1692,7 +1723,7 @@
 
         /* ── App (state only, no JSX views inline) ── */
         function App() {
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwB0eM2xWednq7B1bT6IVFvigxPfE0qMuktOHyd61FlpJvDUqsmx6_G-SHNHYrbwvxd6w/exec';
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtB3jkR0lXzcrlROSbadsc1bQdmQLpdQfS5IDK6o1r_EUgSKnYVag1wjTWUvuS_aZiJA/exec';
 
             const [view, setView] = useState('home');
             const [categories, setCategories] = useState([]);
@@ -1727,6 +1758,7 @@
             // Transaction detail drawer state
             const [selectedTx, setSelectedTx] = useState(null);
             const [drawerOpen, setDrawerOpen] = useState(false);
+            const [editDescription, setEditDescription] = useState('');
             const [editRawAmount, setEditRawAmount] = useState('');
             const [editDisplayAmount, setEditDisplayAmount] = useState('');
             const [updateTxLoading, setUpdateTxLoading] = useState(false);
@@ -1877,6 +1909,7 @@
             const openTransactionDetail = (tx) => {
                 setSelectedTx(tx);
                 const digits = String(Math.round(parseFloat(tx.total) || 0));
+                setEditDescription(tx.description || '');
                 setEditRawAmount(digits);
                 setEditDisplayAmount(formatDigits(digits));
                 setDeleteTxConfirmOpen(false);
@@ -1896,6 +1929,8 @@
 
             const handleUpdateTransaction = async () => {
                 if (!selectedTx || !editRawAmount) return;
+                const description = editDescription.trim();
+                if (!description) { showAlert('Description cannot be empty', 'error'); return; }
                 setUpdateTxLoading(true);
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, {
@@ -1904,11 +1939,14 @@
                         body: JSON.stringify({
                             action: 'updateTransaction',
                             no: selectedTx.no,
+                            description,
                             total: parseFloat(editRawAmount)
                         })
                     });
                     setTransactions(prev => prev.map(t =>
-                        t.no === selectedTx.no ? { ...t, total: parseFloat(editRawAmount) } : t
+                        t.no === selectedTx.no
+                            ? { ...t, description, total: parseFloat(editRawAmount) }
+                            : t
                     ));
                     showAlert('Transaction updated successfully', 'success');
                     closeTransactionDetail();
@@ -2085,6 +2123,8 @@
                     <TransactionDrawer
                         open={drawerOpen}
                         transaction={selectedTx}
+                        editDescription={editDescription}
+                        onEditDescriptionChange={(e) => setEditDescription(e.target.value)}
                         editDisplayAmount={editDisplayAmount}
                         onEditAmountChange={handleEditAmountChange}
                         deleteConfirmOpen={deleteTxConfirmOpen}
