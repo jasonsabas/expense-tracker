@@ -1392,18 +1392,6 @@
                                 />
                             </div>
 
-                            <div>
-                                <input
-                                    type="text"
-                                    className="drawer-title-input"
-                                    value={editDescription}
-                                    onChange={onEditDescriptionChange}
-                                    placeholder="Description"
-                                    disabled={updateLoading || deleteLoading}
-                                />
-                                <p>{transaction.category} • {transaction.date}</p>
-                            </div>
-
                             <button className="drawer-update-btn" onClick={onUpdate} disabled={updateLoading || deleteLoading}>
                                 {updateLoading
                                     ? <><SpinnerIcon size={18} /> Updating...</>
